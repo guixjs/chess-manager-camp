@@ -1,6 +1,7 @@
 package com.projetos.back_chess_manager.service.usuario;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.projetos.back_chess_manager.dto.usuario.CriarUsuarioDTO;
@@ -17,6 +18,9 @@ public class CriarUsuarioService {
   @Autowired
   private UsuarioRepository usuarioRepository;
 
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   public UsuarioEntity execute(CriarUsuarioDTO usuarioDTO) {
     this.usuarioRepository.findByUsername(usuarioDTO.getUsername())
         .ifPresent((user) -> {
@@ -29,6 +33,8 @@ public class CriarUsuarioService {
       throw new IllegalArgumentException("Role é obrigatório");
     }
 
+    var senhaCriptografada = passwordEncoder.encode(usuarioDTO.getSenha());
+
     UsuarioEntity novoUsuario;
 
     switch (roleNovoUsuario) {
@@ -40,7 +46,7 @@ public class CriarUsuarioService {
             .nome(usuarioDTO.getNome())
             .idade(usuarioDTO.getIdade())
             .username(usuarioDTO.getUsername())
-            .senha(usuarioDTO.getSenha())
+            .senha(senhaCriptografada)
             .sexo(usuarioDTO.getSexo())
             .rating(usuarioDTO.getRating())
             .role(roleNovoUsuario)
@@ -52,7 +58,7 @@ public class CriarUsuarioService {
             .nome(usuarioDTO.getNome())
             .idade(usuarioDTO.getIdade())
             .username(usuarioDTO.getUsername())
-            .senha(usuarioDTO.getSenha())
+            .senha(senhaCriptografada)
             .sexo(usuarioDTO.getSexo())
             .role(roleNovoUsuario)
             .build();
