@@ -24,5 +24,4 @@ public class JogadorEntity extends UsuarioEntity {
   @Enumerated(EnumType.STRING)
   private TituloJogador titulo;
   private Integer rating;
-
 }

@@ -1,9 +1,7 @@
 package com.projetos.back_chess_manager.model;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import com.projetos.back_chess_manager.enums.TipoUsuario;
@@ -59,7 +57,4 @@ public class UsuarioEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, updatable = false)
   private TipoUsuario role;
-
-  @CreationTimestamp
-  private LocalDate created_at;
 }
