@@ -1,10 +1,11 @@
 package com.projetos.back_chess_manager.security;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,14 +31,27 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     if (header != null) {
       var subjectToken = this.jwtProvider.validarToken(header);
+
       if (subjectToken.isEmpty()) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return;
       }
-      request.setAttribute("idUsuario", subjectToken);
-      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(subjectToken, null,
-          Collections.emptyList());
+
+      var roleToken = jwtProvider.getClaim(header, "role");
+      if (roleToken == null || roleToken.isEmpty()) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        return;
+      }
+
+      List<SimpleGrantedAuthority> auths = List.of(
+          new SimpleGrantedAuthority("ROLE_" + roleToken));
+
+      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+          subjectToken,
+          null,
+          auths);
       SecurityContextHolder.getContext().setAuthentication(auth);
+      request.setAttribute("idUsuario", subjectToken);
     }
     filterChain.doFilter(request, response);
   }

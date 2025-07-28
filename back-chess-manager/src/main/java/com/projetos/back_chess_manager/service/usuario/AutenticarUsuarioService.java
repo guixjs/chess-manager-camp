@@ -66,7 +66,7 @@ public class AutenticarUsuarioService {
     var token = JWT.create().withIssuer("chess")
         .withSubject(idUser.toString())
         .withExpiresAt(expires)
-        .withClaim("roles", role)
+        .withClaim("role", role.get(0))
         .sign(algorithm);
 
     return token;

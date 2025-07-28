@@ -29,4 +29,22 @@ public class JWTProvider {
       return "";
     }
   }
+
+  public String getClaim(String token, String claimName) {
+    token = token.replace("Bearer ", "");
+
+    Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
+    try {
+      var claim = JWT.require(algorithm)
+          .build()
+          .verify(token)
+          .getClaim(claimName)
+          .asString();
+      return claim;
+    } catch (JWTVerificationException e) {
+      e.printStackTrace();
+      return "";
+    }
+  }
 }
